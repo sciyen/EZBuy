@@ -62,6 +62,15 @@ class ContentType(Enum):
     LOCATION = "location"
 
 
+class SenderActionType(Enum):
+    def __str__(self):
+        return self.value
+    
+    TYPING_ON = "typing_on"
+    TYPING_OFF = "typing_off"
+    MARK_SEEN = "mark_seen"
+
+
 class ActionButton:
     def __init__(self, button_type, title, url=None, payload=None):
         self.button_type = button_type
@@ -234,16 +243,12 @@ class Messenger(object):
         if not is_response: message_content[TAG_FIELD] = "NON_PROMOTIONAL_SUBSCRIPTION"
         self._send(message_content)
 
-    def send_typing_status(self, user_id, status_num):
-        """
-        $ status_num\n
-        1: 'typing_on', 2: 'typing_off', 3: 'mark_seen'
-        """
-        sender_action = ["typing_on", "typing_off", "mark_seen"]
+    def send_typing_status(self, user_id, sender_action):
+        if isinstance(sender_action, SenderActionType): sender_action = sender_action.value
         messaging_type = "RESPONSE"
         data = {MESSAGING_TYPE_FIELD: messaging_type,
                 RECIPIENT_FIELD: self._build_recipient(user_id),
-                "sender_action": sender_action[status_num-1]}
+                "sender_action": sender_action}
         fmt = URL_BASE + "me/messages?access_token={token}"
         return requests.post(fmt.format(token=self.access_token),
                              headers={"Content-Type": "application/json"},
@@ -254,10 +259,6 @@ class Messenger(object):
         return {Recipient.ID.value: user_id}
 
     def _send(self, message_data):
-        ### console output
-        print('reply: ',end = '')
-        pprint(message_data)
-        ###
         post_message_url = URL_BASE + "me/messages?access_token={token}"
         response_message = json.dumps(message_data)
         logger.debug(response_message)
