@@ -63,9 +63,6 @@ class ContentType(Enum):
 
 
 class SenderActionType(Enum):
-    def __str__(self):
-        return self.value
-    
     TYPING_ON = "typing_on"
     TYPING_OFF = "typing_off"
     MARK_SEEN = "mark_seen"

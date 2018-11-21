@@ -2,6 +2,6 @@ token.json
 chatbot/venv_chatbot/
 chatbot/.ipynb_checkpoints/
 chatbot/__pycache__/
+chatbot/config/
 chatbot/ssl/
-chatbot/db_login_info.json
 chatbot/*.ipynb
