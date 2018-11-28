@@ -1,4 +1,4 @@
-config = {
+config={
   'mongodb':{
     'database':'',
     'host':'',
@@ -6,4 +6,4 @@ config = {
     'user':'',
   }
 }
-module.exports = config;
+module.exports=config;
