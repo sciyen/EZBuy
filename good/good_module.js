@@ -6,26 +6,33 @@ module.exports.push = function (good,collection) {
         if (err) throw err;
         var dbo = db.db("wp2018_groupA");
         var myobj =good;
-    		dbo.collection(collection).insertMany(myobj, function(err, res) {
-        	if (err) throw err;
-        	console.log("Number of documents inserted: " + res.insertedCount);
-        	db.close();
-    		});
+        dbo.collection(collection).createIndex({message:1},{unique:true})
+                dbo.collection(collection).insertMany(myobj, function(err, res) {
+                if (err) throw err;
+                console.log("Number of documents inserted: " + res.insertedCount);
+                db.close();
+                });
     });
 };
-module.exports.query=function(keyword){
-    var re=new RegExp(keyword);
-    var query={"car": re};
+module.exports.query=function(keyword,collection){
+   // console.log(keyword.shopping_cart);
+    var query=[];
+    for(var i=0;i<keyword.shopping_cart.length;i++){
+      var reg =new RegExp(keyword.shopping_cart[i].item);
+      query.push(reg);
+    }
+    console.log(query);
     const config=require('./config');
     var MongoClient = require('mongodb').MongoClient;
     const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
     MongoClient.connect(url,function(err,db){
         if(err) throw err;
         var dbo =db.db('wp2018_groupA');
-        dbo.collection("test").find(query).toArray(function(err,result){
+        dbo.collection(collection).find({message:{$in:query}}).toArray(function(err,result){
             if(err) throw err;
             console.log(result);
             db.close();
         });
     });
 };
+

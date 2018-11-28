@@ -49,7 +49,7 @@ var crawler = {
         usableFeeds[item] = feeds.data[item];
       }
     }
-    return usableFeeds;
+    return Object.values(usableFeeds);
   }
 }
 

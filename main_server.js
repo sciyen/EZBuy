@@ -7,6 +7,7 @@ function refreshGoods(){
   crawler.loadFeeds((feeds)=>{
     console.log('New feeds loaded');
     good.push(feeds, goodCollectionName);
+  // console.log(feeds);
   })
 }
 
