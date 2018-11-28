@@ -6,7 +6,7 @@ module.exports.push = function (good,collection) {
         if (err) throw err;
         var dbo = db.db("wp2018_groupA");
         var myobj =good;
-    		dbo.collection(collection.insertMany(myobj, function(err, res) {
+    		dbo.collection(collection).insertMany(myobj, function(err, res) {
         	if (err) throw err;
         	console.log("Number of documents inserted: " + res.insertedCount);
         	db.close();
