@@ -1,5 +1,5 @@
 const LOG_FEEDS = false;
-const tokenFilename = 'token.json';
+const tokenFilename = './fb_crawler/token.json';
 
 var fs = require('fs');
 const https = require('https');
