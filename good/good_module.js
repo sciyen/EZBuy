@@ -37,13 +37,15 @@ module.exports.query=function(keyword, results ,collection){
             results.success--;
             console.log('Success in query', results.success);
             var goodList = [];
-            for(var i =0;i<result.length;i++){
-              var obj = {};
-              obj.item = i;
-              obj.post_id = result[i].id;
-              goodList.push(obj);
+            if(result.length > 0){
+              for(var i =0;i<result.length;i++){
+                var obj = {};
+                obj.item = i.toString();
+                obj.post_id = result[i].id;
+                goodList.push(obj);
+              }
+              results[keyword.client_id] = goodList;
             }
-            results[keyword.client_name] = goodList;
             db.close();
         });
     });
