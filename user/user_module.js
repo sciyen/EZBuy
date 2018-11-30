@@ -18,14 +18,14 @@ module.exports.push = function (good,collection) {
           });
       });
 };
-module.exports.query=function(keyword, results ,collection){
-    console.log('Searching for ', keyword.shopping_cart);
+module.exports.query=function(keyword,collection){
+   // console.log(keyword.shopping_cart);
     var query=[];
     for(var i=0;i<keyword.shopping_cart.length;i++){
       var reg =new RegExp(keyword.shopping_cart[i].item);
       query.push(reg);
     }
-    console.log('Query= ', query);
+    console.log(query);
     const config=require('./config');
     var MongoClient = require('mongodb').MongoClient;
     const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
@@ -34,33 +34,29 @@ module.exports.query=function(keyword, results ,collection){
         var dbo =db.db('wp2018_groupA');
         dbo.collection(collection).find({message:{$in:query}}).toArray(function(err,result){
             if(err) throw err;
-            results.success--;
-            console.log('Success in query', results.success);
-            var goodList = [];
-            for(var i =0;i<result.length;i++){
-              var obj = {};
-              obj.item = i;
-              obj.post_id = result[i].id;
-              goodList.push(obj);
-            }
-            results[keyword.client_name] = goodList;
+            console.log(result);
             db.close();
         });
     });
 };
 
-module.exports.listAll=function(collection){
+module.exports.listAll=function(collection, callback){
     const config=require('./config');
     var MongoClient = require('mongodb').MongoClient;
     const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
     MongoClient.connect(url,function(err,db){
         if(err) throw err;
         var dbo =db.db('wp2018_groupA');
-        dbo.collection(collection).find({}).toArray(function(err,result){
+        dbo.collection(collection).find({}).toArray((err, result)=>{
+          if(err) throw err;
+          db.close();
+          callback(result);
+        })
+        /*dbo.collection(collection).find({}).toArray(function(err,result){
             if(err) throw err;
             console.log(result);
             db.close();
-        });
+        });*/
     });
 };
 
