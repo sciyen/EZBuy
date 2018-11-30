@@ -11,4 +11,14 @@ function refreshGoods(){
   })
 }
 
+function listAllGoods(){
+  good.listAll(goodCollectionName);
+}
+
+function removeAllGoods(){
+  good.removeAll(goodCollectionName);
+}
+
+removeAllGoods();
 refreshGoods();
+listAllGoods();

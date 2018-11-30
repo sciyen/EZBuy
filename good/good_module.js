@@ -36,3 +36,29 @@ module.exports.query=function(keyword,collection){
     });
 };
 
+module.exports.listAll=function(collection){
+    const config=require('./config');
+    var MongoClient = require('mongodb').MongoClient;
+    const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
+    MongoClient.connect(url,function(err,db){
+        if(err) throw err;
+        var dbo =db.db('wp2018_groupA');
+        dbo.collection(collection).find({}).toArray(function(err,result){
+            if(err) throw err;
+            console.log(result);
+            db.close();
+        });
+    });
+};
+
+module.exports.removeAll=function(collection){
+    const config=require('./config');
+    var MongoClient = require('mongodb').MongoClient;
+    const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
+    MongoClient.connect(url,function(err,db){
+        if(err) throw err;
+        var dbo =db.db('wp2018_groupA');
+        dbo.collection(collection).deleteMany({}, (err)=>{
+          if(err) console.log('Remove Error, ', err);})
+    });
+};

@@ -1,13 +1,15 @@
-const LOG_FEEDS = false;
-const tokenFilename = './fb_crawler/token.json';
+const LOG_FEEDS = true;
+const module_dir = __dirname;
+const tokenFilename = `${module_dir}/token.json`;
 
 var fs = require('fs');
 const https = require('https');
 
 var tokenFile = fs.readFileSync(tokenFilename);
 var TOKEN = JSON.parse(tokenFile);
+const postLimit = 80;
 
-const graphUrl = `https://graph.facebook.com/${TOKEN['GROUP_ID']}/feed?fields=message,description,picture&access_token=${TOKEN['ACCESS_TOKEN']};`
+const graphUrl = `https://graph.facebook.com/${TOKEN['GROUP_ID']}/feed?fields=id,updated_time,message,description,picture&limit=${postLimit}&&access_token=${TOKEN['ACCESS_TOKEN']};`
 
 var crawler = {
   /* Filter bad feeds */
@@ -37,12 +39,14 @@ var crawler = {
     var usableFeeds = {};
     for(var item in feeds.data){
       if(this.isExist(feeds.data[item].message)){
-        var message = feeds.data[item].message;
         var id = feeds.data[item].id;
+        var updated_time = feeds.data[item].updated_time;
+        var message = feeds.data[item].message;
         var picUrl = feeds.data[item].picture;
         if(LOG_FEEDS){
           console.log(`item ${item}=========================================================================================`);
           console.log(`    id= ${id}`);
+          console.log(`    time= ${updated_time}`);
           console.log(`    msg= ${message}`);
           console.log(`    pic= ${picUrl}`);
         }
