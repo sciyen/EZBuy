@@ -6,13 +6,17 @@ module.exports.push = function (good,collection) {
         if (err) throw err;
         var dbo = db.db("wp2018_groupA");
         var myobj =good;
-        dbo.collection(collection).createIndex({message:1},{unique:true})
-                dbo.collection(collection).insertMany(myobj, function(err, res) {
-                if (err) throw err;
-                console.log("Number of documents inserted: " + res.insertedCount);
-                db.close();
-                });
-    });
+        for(var i=0;i<myobj.length;i++){
+          myobj[i]["createTime"]=new Date();
+        }
+        dbo.collection(collection).createIndex({"createTime":1},{expireAfterSeconds:60})
+        dbo.collection(collection).createIndex({id:1},{unique:true})
+        dbo.collection(collection).insertMany(myobj, function(err, res) {
+          if (err)// throw err;
+         // console.log("Number of documents inserted: " + res.insertedCount);
+          db.close();
+          });
+      });
 };
 module.exports.query=function(keyword,collection){
    // console.log(keyword.shopping_cart);
