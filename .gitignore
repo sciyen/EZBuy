@@ -5,3 +5,4 @@ package.json
 package-lock.json
 config.js
 feeds.out
+email.js
