@@ -1,4 +1,4 @@
-const LOG_FEEDS = false;
+const LOG_FEEDS = true;
 const module_dir = __dirname;
 const tokenFilename = `${module_dir}/token.json`;
 
@@ -7,7 +7,7 @@ const https = require('https');
 
 var tokenFile = fs.readFileSync(tokenFilename);
 var TOKEN = JSON.parse(tokenFile);
-const postLimit = 80;
+const postLimit = 20;
 
 const graphUrl = `https://graph.facebook.com/${TOKEN['GROUP_ID']}/feed?fields=id,updated_time,message,description,picture&limit=${postLimit}&&access_token=${TOKEN['ACCESS_TOKEN']};`
 

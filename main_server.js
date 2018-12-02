@@ -32,13 +32,14 @@ function findMatch(){
     chatbot.send(results);
   });
 }
-
 function refresh(){
   console.log('Refreshing Good datasets');
-  refreshGoods();
+  //refreshGoods();
   console.log('Finding match goods');
   findMatch();
 }
+//removeAllGoods();
+refresh();
 setInterval(()=>{refresh()}, 60*1000);
 //refreshGoods();
 //removeAllGoods();
