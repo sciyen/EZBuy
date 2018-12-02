@@ -1,0 +1,7 @@
+Tue, 20 Nov 2018 15:44:28 GMT body-parser deprecated bodyParser: use individual json/urlencoded middlewares at serv.js:9:9
+Tue, 20 Nov 2018 15:44:28 GMT body-parser deprecated undefined extended: provide extended option at node_modules/body-parser/index.js:105:29
+Tue, 20 Nov 2018 15:45:31 GMT body-parser deprecated bodyParser: use individual json/urlencoded middlewares at serv.js:9:9
+Tue, 20 Nov 2018 15:45:31 GMT body-parser deprecated undefined extended: provide extended option at node_modules/body-parser/index.js:105:29
+Tue, 20 Nov 2018 15:45:46 GMT body-parser deprecated bodyParser: use individual json/urlencoded middlewares at serv.js:9:9
+Tue, 20 Nov 2018 15:45:46 GMT body-parser deprecated undefined extended: provide extended option at node_modules/body-parser/index.js:105:29
+(node:7120) DeprecationWarning: current URL string parser is deprecated, and will be removed in a future version. To use the new parser, pass option { useNewUrlParser: true } to MongoClient.connect.
