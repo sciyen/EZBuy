@@ -40,5 +40,6 @@ function refresh(){
   findMatch();
 }
 setInterval(()=>{refresh()}, 60*1000);
+//refreshGoods();
 //removeAllGoods();
 //listAllGoods();
