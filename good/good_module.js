@@ -10,14 +10,18 @@ module.exports.push = function (good,collection) {
           myobj[i]["createTime"]=new Date();
         }
         dbo.collection(collection).createIndex({"createTime":1},{expireAfterSeconds:60*60*24*14})
-        dbo.collection(collection).createIndex({id:1},{unique:true})
-        dbo.collection(collection).insertMany(myobj, function(err, res) {
-         // if (err) throw err;
-         // console.log("Number of documents inserted: " + err.nInserted);
-          console.log("errmsg" +"\n"+ err);
+        dbo.collection(collection).createIndex({id:1},{unique:true,dropDups:true})
+        try{
+          dbo.collection(collection).insertMany(myobj, function(err, res) {
+          //console.log("Number of documents inserted: " + err.nInserted);
+          //console.log("errmsg" +"\n"+ err);
           db.close();
-          },{ordered:false});
-      });
+        },{ordered:false});
+        }
+        catch(err){
+          return;
+        }
+    });
 };
 module.exports.query=function(keyword, results ,collection){
     console.log('Searching for ', keyword.shopping_cart);
