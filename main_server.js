@@ -39,6 +39,6 @@ function refresh(){
   console.log('Finding match goods');
   findMatch();
 }
-setInterval(()=>{refresh()}, 10*1000);
+setInterval(()=>{refresh()}, 60*1000);
 //removeAllGoods();
 //listAllGoods();

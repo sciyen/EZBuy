@@ -1,4 +1,4 @@
-const LOG_FEEDS = true;
+const LOG_FEEDS = false;
 const module_dir = __dirname;
 const tokenFilename = `${module_dir}/token.json`;
 
@@ -20,8 +20,8 @@ var crawler = {
   /* Scratch feeds from FB group */
   loadFeeds: function loadFeeds(callback) {
     https.get(graphUrl, (res)=>{                      // FB API need https protocal
-      console.log('statusCode: ', res.statusCode);
-      console.log('header: ', res.headers);           
+      //console.log('statusCode: ', res.statusCode);
+      //console.log('header: ', res.headers);           
       var body = '';
       res.on('data', (chunk)=>{                       // data will be departed with serveral parts
         body += chunk; });                            // So we need to assemble them manually
@@ -29,6 +29,7 @@ var crawler = {
         var content = JSON.parse(body);
         if(LOG_FEEDS)
           console.log('JSON content=', content);
+        console.log('Departing feeds...');
         callback(this.departFeeds(content));           // Use departFeeds to filter usable feeds
       });
     })

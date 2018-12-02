@@ -9,10 +9,10 @@ module.exports.push = function (good,collection) {
         for(var i=0;i<myobj.length;i++){
           myobj[i]["createTime"]=new Date();
         }
-        dbo.collection(collection).createIndex({"createTime":1},{expireAfterSeconds:60})
+        dbo.collection(collection).createIndex({"createTime":1},{expireAfterSeconds:30*24*60*60})
         dbo.collection(collection).createIndex({id:1},{unique:true})
         dbo.collection(collection).insertMany(myobj, function(err, res) {
-          if (err)// throw err;
+         // if (err) throw err;
          // console.log("Number of documents inserted: " + res.insertedCount);
           db.close();
           });
