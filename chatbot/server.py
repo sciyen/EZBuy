@@ -38,17 +38,30 @@ class ConstantVariable(IntEnum):
     ITEM_NUM_LIMIT = 9
 
 class ReplyTemplate(Enum):    
-    GET_STARTED = 'get_started_text'
-    HELP = 'help_text'
-    ADD_TO_CART_SUCCESS = '成功將「{item_name}」加入追蹤清單囉！我們將會持續替你關注二手版中的相關商品~\n（目前你已追蹤了{item_num}/9個商品）'
-    ADD_TO_CART_FULL = '不好意思，你的追蹤清單已經滿了> <\n先將清單中不想繼續追蹤的商品移除後，再來加入新的商品吧！'
-    ADD_TO_CART_EXISTED = '你之前已經有追蹤這項商品囉^^\n要試試看加入其它的商品嗎？'
-    SHOW_CART_HEAD = 'show_shopping_cart_head_text\n'
-#     SHOW_CART_TAIL = 'show_shopping_cart_tail_text'
-    SHOW_CART_EMPTY = 'show_shopping_cart_empty_text'
+#     GET_STARTED = 'get_started_text'
+    GET_STARTED = ('歡迎使用EZBuy聊天機器人\\(ΦωΦ)/\n'
+                   '如果不知道要怎麼使用，請先按下「查看使用說明」來了解怎麼使用> <~')
+    HELP = ('＊ 直接在訊息欄中輸入想要在成大二手版v2.0裡追蹤的商品名稱，我們會24小時不眠不休替你關注，一發現符合的商品就立刻發訊息通知你喔\\(ΦωΦ)/\n'
+    '＊ 如果忘了自己追蹤了哪些東西，或是不想再追蹤了，透過「我的追蹤清單」就可以檢視並刪除自己已經追蹤的物品~\n'
+    '＊ 突然失憶忘記要怎麼用EZBuy，可以按「查看使用說明」來重新查看使用說明~\n'
+    '＊ 最後最後，如果使用上遇到任何問題或是有話要和我們說，按下「問題/意見回饋」就可以連到官方網頁和我們聯絡喔> <')
+#     HELP = '你可以直接在訊息欄中輸入想要在我們的資料庫中追蹤的關鍵字，或是按下「我的追蹤清單」來檢視並修改自己已經追蹤的關鍵字喔~'
+    ADD_TO_CART_SUCCESS = '成功將「{item_name}」加入追蹤清單囉！我們將會持續替你關注二手版v2.0中的相關商品~\n（目前你已追蹤了{item_num}/9個商品）'
+#     ADD_TO_CART_SUCCESS = '成功將「{item_name}」加入追蹤清單囉！我們將會持續替你關注有沒有相關字詞的出現~\n（目前你已追蹤了{item_num}/9組關鍵字）'
+    ADD_TO_CART_FULL = '不好意思，你的追蹤清單滿了耶> <\n先將清單中不想繼續追蹤的商品移除後，再來加入新的商品吧！'
+#     ADD_TO_CART_FULL = '不好意思，你的追蹤清單已經滿了> <\n先將清單中不想繼續追蹤的關鍵字移除後，再來加入新的關鍵字吧！'
+    ADD_TO_CART_EXISTED = '你之前已經有追蹤這項商品囉^^\n要試試看加入其它的商品嗎> <？'
+#     ADD_TO_CART_EXISTED = '你之前已經有追蹤這個關鍵字囉^^\n要試試看加入其它的關鍵字嗎？'
+    SHOW_CART_HEAD = '下面是目前你正在追蹤的商品清單~想要移除掉哪個商品呢^^？\n'
+#     SHOW_CART_HEAD = '以下是目前你正在追蹤的關鍵字。想要移除掉某個關鍵字嗎？\n'
+    SHOW_CART_EMPTY = '你的追蹤清單裡空空如也T_T\n趕快加入第一個想追蹤的商品吧> <！'
+#     SHOW_CART_EMPTY = 'show_shopping_cart_empty_text'
     REMOVE_ONE_FROM_CART = '成功將「{item_name}」從追蹤清單移除囉！\n（Tips：想追蹤其它商品，直接在訊息欄輸入商品名稱就可以了~）'
+#     REMOVE_ONE_FROM_CART = '成功將「{item_name}」從追蹤清單移除囉！\n（Tips：想追蹤其它關鍵字，直接在訊息欄輸入關鍵字名稱就可以了~）'
     REMOVE_ALL_FROM_CART = '成功將追蹤清單中所有商品移除囉！\n（Tips：想追蹤其它商品，直接在訊息欄輸入商品名稱就可以了~）'
+#     REMOVE_ALL_FROM_CART = '成功將追蹤清單中所有關鍵字移除囉！\n（Tips：想追蹤其它關鍵字，直接在訊息欄輸入關鍵字就可以了~）'
     REMOVE_NONE_FROM_CART = '感謝你使用EZBuy，記得隨時關注我們的新消息喔> <'
+    ITEM_MATCH = '野生的商品出現了！立刻點擊網址去捕獲它吧\\(ΦωΦ)/\n'
     BUTTON_GROUP = [
         ActionButton(ButtonType.POSTBACK, '我的追蹤清單', payload='SHOW_SHOPPING_CART'),
         ActionButton(ButtonType.POSTBACK, '查看使用說明', payload='SHOW_HELP'),
@@ -167,6 +180,10 @@ def removeFromShoppingCart(client_id, item_idx):
     
 bot = Messenger(ACCESS_TOKEN)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/messenger_webhook', methods=['GET'])
 def handleVerification():
     if request.args['hub.verify_token'] == VERIFY_TOKEN:
@@ -223,6 +240,28 @@ def handleIncomingPostEvents():
         addToShoppingCart(client_id, client_name, item_name)
     else: pass
 
+    return 'ok', 200
+
+@app.route('/match', methods=['POST'])
+def match():
+    data = request.json
+    pprint(data)
+    with open('garbage/test.json', 'w', encoding='utf-8') as fout:
+        json.dump(data, fout, sort_keys=True, indent=4, separators=(',', ':'))
+        fout.close()
+    for client_id in data:
+        item_list = data[client_id]
+        reply_message = ReplyTemplate.ITEM_MATCH.value
+        for item in item_list:
+            reply_message += 'https://www.facebook.com/{}\n'.format(item['post_id'])
+        showUsualButtons(client_id, reply_message)
+    return 'ok', 200
+
+@app.route('/reply_message_test', methods=['GET'])
+def replyMessageTest():
+    client_id = request.args['id']
+    text = request.args['text']
+    bot.send_text(client_id, text)
     return 'ok', 200
 
 if __name__ == '__main__':
