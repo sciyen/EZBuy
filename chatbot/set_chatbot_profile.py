@@ -10,5 +10,5 @@ ACCESS_TOKEN = token_info['access_token']
 VERIFY_TOKEN = token_info['verify_token']
 
 bot = Messenger(ACCESS_TOKEN)
-bot.set_greeting_text('你好，{{user_full_name}}，我們是EZbuy！\n')
+bot.set_greeting_text('你好，{{user_full_name}}，我們是NCKU EZbuy！\n')
 bot.set_get_started_button_payload("GET_STARTED")

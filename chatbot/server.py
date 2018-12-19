@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from enum import Enum, IntEnum
 from pprint import pprint
 import requests, json, csv, ssl, os
+import hashlib, hmac
 
 app = Flask(__name__)
 
@@ -22,6 +23,7 @@ with open('config/page_token.json', 'r') as fin:
     fin.close()
 ACCESS_TOKEN = token_info['access_token']
 VERIFY_TOKEN = token_info['verify_token']
+APP_SECRET = token_info['app_secret']
 
 with open('config/db_config.json', 'r') as fin:
     db_login_info = json.load(fin)
@@ -87,6 +89,12 @@ database(collection) document example:
     ]
 }
 '''
+def checkEventValidity(data_raw, xhub_signature):
+    signature = hmac.new(APP_SECRET, data_raw, hashlib.sha1).hexdigest()
+    if hmac.compare_digest(signature, xhub_signature.split('=')[1]):
+        return True
+    else:
+        return False
 def showUsualButtons(client_id, text):
     '''
     傳送文字&常用的三個按鈕給使用者
@@ -194,6 +202,11 @@ def handleVerification():
 @app.route('/messenger_webhook', methods=['POST'])
 def handleIncomingPostEvents():
     data = request.json
+#     data_raw = json.dumps(request.json)
+#     print(request.headers)
+#     pprint(data)
+#     signature = hmac.new(APP_SECRET, data_raw, hashlib.sha1).hexdigest()
+#     print(signature)
     messaging_section = data['entry'][0]['messaging'][0]
     client_id = messaging_section['sender']['id']    
     client_info = requests.get('https://graph.facebook.com/{psid}'.format(psid=client_id),
@@ -242,27 +255,20 @@ def handleIncomingPostEvents():
 
     return 'ok', 200
 
-@app.route('/match', methods=['POST'])
-def match():
-    data = request.json
-    pprint(data)
-    with open('garbage/test.json', 'w', encoding='utf-8') as fout:
-        json.dump(data, fout, sort_keys=True, indent=4, separators=(',', ':'))
-        fout.close()
-    for client_id in data:
-        item_list = data[client_id]
-        reply_message = ReplyTemplate.ITEM_MATCH.value
-        for item in item_list:
-            reply_message += 'https://www.facebook.com/{}\n'.format(item['post_id'])
-        showUsualButtons(client_id, reply_message)
-    return 'ok', 200
-
-@app.route('/reply_message_test', methods=['GET'])
-def replyMessageTest():
-    client_id = request.args['id']
-    text = request.args['text']
-    bot.send_text(client_id, text)
-    return 'ok', 200
+# @app.route('/match', methods=['POST'])
+# def match():
+#     data = request.json
+#     pprint(data)
+#     with open('garbage/test.json', 'w', encoding='utf-8') as fout:
+#         json.dump(data, fout, sort_keys=True, indent=4, separators=(',', ':'))
+#         fout.close()
+#     for client_id in data:
+#         item_list = data[client_id]
+#         reply_message = ReplyTemplate.ITEM_MATCH.value
+#         for item in item_list:
+#             reply_message += 'https://www.facebook.com/{}\n'.format(item['post_id'])
+#         showUsualButtons(client_id, reply_message)
+#     return 'ok', 200
 
 if __name__ == '__main__':
     app.run(host=SERVER_HOST, port=SERVER_PORT, ssl_context=SSL_CTX, debug=True)
