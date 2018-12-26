@@ -4,7 +4,7 @@ var good = require('./good/good_module');
 var chatbot = require('./chatbot/chatbot_module.js');
 
 const goodCollectionName = 'EZBuyGoods';
-const userCollectionName = 'user_info';
+const userCollectionName = 'client_info';
 
 function refreshGoods(){
   crawler.loadFeeds((feeds)=>{
@@ -39,8 +39,9 @@ function refresh(){
   console.log('Finding match goods');
   findMatch();
 }
-setInterval(()=>{refresh()}, 60*1000);
-//refreshGoods();
-//findMatch();
+//good.listAll("client_info")
+//setInterval(()=>{refresh()}, 60*1000);
+refreshGoods();
+findMatch();
 //removeAllGoods();
 //listAllGoods();

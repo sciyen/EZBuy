@@ -41,20 +41,31 @@ module.exports.query=function(keyword, results ,collection){
             if(err) throw err;
             results.success--;
             console.log('Success in query', results.success);
+            console.log(result);
             var goodList = [];
             if(result.length > 0){
               for(var i =0;i<result.length;i++){
-                var obj = {};
-                obj.item = i.toString();
-                obj.post_id = result[i].id;
-                goodList.push(obj);
+                var obj={};
+                for(var j=0;j<keyword.shopping_cart.length;j++){
+                  var str=result[i]["message"];
+                  console.log(str);
+                  if(str.includes(keyword.shopping_cart[j].item)){
+                    obj.item = keyword.shopping_cart[j].item;
+                    obj.post_id = result[i].id;
+                    goodList.push(obj);
+                  }
+                }
               }
-              results[keyword.client_id] = goodList;
             }
-            db.close();
-        });
-    });
-};
+              console.log("goodList")
+              console.log(goodList);
+              results[keyword.client_id] = goodList;
+              results.token=config.token;
+          })
+        db.close();
+      });
+    };
+
 
 module.exports.listAll=function(collection){
     const config=require('./config');
