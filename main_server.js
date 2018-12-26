@@ -2,6 +2,9 @@ var crawler = require('./fb_crawler/crawler_module.js');
 var user = require('./user/user_module.js');
 var good = require('./good/good_module');
 var chatbot = require('./chatbot/chatbot_module.js');
+var express = require('express');
+const app = express();
+const port = 10418;
 
 const goodCollectionName = 'EZBuyGoods';
 const userCollectionName = 'user_info';
@@ -32,15 +35,22 @@ function findMatch(){
     chatbot.send(results);
   });
 }
+
+app.get("/crawler_request", (req, res)=>{
+  console.log('Get crawler request from chatbot');
+  //findMatch();
+})
+
 function refresh(){
   console.log('Refreshing Good datasets');
-  //refreshGoods();
+  refreshGoods();
   console.log('Finding match goods');
-  findMatch();
+  setTimeout(()=>{findMatch()}, 10000);
 }
 //removeAllGoods();
 refresh();
 setInterval(()=>{refresh()}, 60*1000);
+app.listen(port);
 //refreshGoods();
 //findMatch();
 //removeAllGoods();

@@ -1,4 +1,4 @@
-const LOG_FEEDS = true;
+const LOG_FEEDS = false;
 const module_dir = __dirname;
 const tokenFilename = `${module_dir}/token.json`;
 
@@ -52,6 +52,8 @@ var crawler = {
           console.log(`    pic= ${picUrl}`);
         }
         usableFeeds[item] = feeds.data[item];
+        var timeObj = new Date(feeds.data[item].updated_time);
+        usableFeeds[item].updated_time = timeObj.getTime()/1000;
       }
     }
     return Object.values(usableFeeds);
