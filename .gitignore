@@ -3,5 +3,6 @@ chatbot/venv_chatbot/
 .ipynb_checkpoints/
 chatbot/__pycache__/
 chatbot/config/
+chatbot/garbage/
 chatbot/ssl/
 chatbot/*.ipynb

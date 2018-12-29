@@ -127,9 +127,9 @@ class QuickReply:
 
 
 class Messenger(object):
-    def __init__(self, access_token):
+    def __init__(self, access_token, default_tag_field='NON_PROMOTIONAL_SUBSCRIPTION'):
         self.access_token = access_token
-    
+        self.tag_name = default_tag_field
     ####
     #def subscribe_to_page(self):
     #    fmt = URL_BASE + "me/subscribed_apps?access_token={token}"
@@ -173,7 +173,7 @@ class Messenger(object):
         message_content = {MESSAGING_TYPE_FIELD: messaging_type,
                            RECIPIENT_FIELD: self._build_recipient(user_id),
                            MESSAGE_FIELD: {MessageType.TEXT.value: text}}
-        if not is_response: message_content[TAG_FIELD] = "NON_PROMOTIONAL_SUBSCRIPTION"
+        if not is_response: message_content[TAG_FIELD] = self.tag_name
         self._send(message_content)
 
     def send_image(self, user_id, image, is_response=True):
@@ -188,7 +188,7 @@ class Messenger(object):
                                    }
                                }
                            }}
-        if not is_response: message_content[TAG_FIELD] = "NON_PROMOTIONAL_SUBSCRIPTION"
+        if not is_response: message_content[TAG_FIELD] = self.tag_name
         self._send(message_content)
 
     def send_buttons(self, user_id, title, button_list, is_response=True):
@@ -206,7 +206,7 @@ class Messenger(object):
                                    }
                                }
                            }}
-        if not is_response: message_content[TAG_FIELD] = "NON_PROMOTIONAL_SUBSCRIPTION"
+        if not is_response: message_content[TAG_FIELD] = self.tag_name
         self._send(message_content)
 
     def send_generic(self, user_id, element_list, is_response=True):
@@ -223,7 +223,7 @@ class Messenger(object):
                                    }
                                }
                            }}
-        if not is_response: message_content[TAG_FIELD] = "NON_PROMOTIONAL_SUBSCRIPTION"
+        if not is_response: message_content[TAG_FIELD] = self.tag_name
         self._send(message_content)
 
     def send_quick_replies(self, user_id, title, reply_list, is_response=True):
@@ -237,7 +237,7 @@ class Messenger(object):
                                TEXT_FIELD: title,
                                QUICK_REPLIES_FIELD: replies
                            }}
-        if not is_response: message_content[TAG_FIELD] = "NON_PROMOTIONAL_SUBSCRIPTION"
+        if not is_response: message_content[TAG_FIELD] = self.tag_name
         self._send(message_content)
 
     def send_typing_status(self, user_id, sender_action):
@@ -259,7 +259,7 @@ class Messenger(object):
         post_message_url = URL_BASE + "me/messages?access_token={token}"
         response_message = json.dumps(message_data)
         logger.debug(response_message)
-        req = requests.post(post_message_url.format(token = self.access_token),
+        req = requests.post(post_message_url.format(token=self.access_token),
                             headers = {"Content-Type": "application/json"},
                             data = response_message)
         fmt = "[{status}/{reason}/{text}] Reply to {recipient}: {content}"

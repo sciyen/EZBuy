@@ -1,0 +1,20 @@
+body {
+    background-color: black;
+}
+#video {
+    display: none;
+}
+#img {
+    padding-top: 30vh;
+}
+#img > div {
+    display: table;
+    margin: 0 auto;
+}
+p {
+    color: white;
+    text-align: center;
+    font-size: 4rem;
+    font-weight: 600;
+    font-family: "Open Sans", sans-serif;
+}
