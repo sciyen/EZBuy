@@ -93,3 +93,34 @@ module.exports.removeAll=function(collection){
           if(err) console.log('Remove Error, ', err);})
     });
 };
+module.exports.update_item_info=function(collection){
+    const config=require('./config');
+    var MongoClient = require('mongodb').MongoClient;
+    const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
+    MongoClient.connect(url,function(err,db){
+        if(err) throw err;
+        var dbo =db.db('wp2018_groupA');
+        dbo.collection(collection).find({}).toArray(function(err,result){
+            if(err) throw err;
+            console.log(result);
+            for(var i=0;i<result.length;++i){
+              //var reg= new RegExp(result.item);
+              var good=db.collection("EZBuyGoods").find({"message":{$regex:result[i].item}}).toArray();
+              for(var j=0;j<good.length;++j){
+                if(result[i].posts.map(function(e){return e.post_id}).indexof(good[j].id)==-1){
+                  //var obj={"post_id"=good[j].id,"post_time"=good[j].update_time};
+                  var obj={};
+                  obj.post_id=good[j].id;
+                  obj.post_time=good[j].update_time;
+                  result[i].posts.push(obj);
+                  result[i].last_update_time=Date.now();
+                  db.collection(collection).update({"item":result[i].item}
+                      ,{"item":result[i].item,"posts":result[i].posts,"last_update_time":result[i].last_update_time});
+                }
+              }
+            }
+
+            db.close();
+        });
+    });
+};
