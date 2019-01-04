@@ -93,10 +93,6 @@ module.exports.removeAll=function(collection){
           if(err) console.log('Remove Error, ', err);})
     });
 };
-<<<<<<< HEAD
-/*module.exports.update_item_info=function(collection){
-=======
-
 module.exports.itemMatch=function(results, collection){
     const config=require('./config');
     var MongoClient = require('mongodb').MongoClient;
@@ -131,49 +127,6 @@ module.exports.itemMatch=function(results, collection){
 };
 
 
-module.exports.update_item_info=function(collection){
->>>>>>> 6acc3b9248f866997ece544f6e3be96873f61ce4
-    const config=require('./config');
-    var MongoClient = require('mongodb').MongoClient;
-    const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
-    MongoClient.connect(url,function(err,db){
-        if(err) throw err;
-        var dbo =db.db('wp2018_groupA');
-        var temp={};
-        //var item= dbo.collection(collection).find({}).toArray(function(err,result,temp){temp=result;});
-        //console.log(temp);
-        dbo.collection(collection).find({}).toArray(function(err,result){
-            if(err) throw err;
-            //console.log(result);
-            for(var i=0;i<result.length;++i){
-              var item_info= result[i].posts.map(function(e){return e.post_id;});
-              var temp=result[i];
-              //console.log(temp.item);
-              dbo.collection("EZBuyGoods").find({"message":{$regex:result[i].item}}).toArray(function(err,good){
-                //console.log(good);
-                for(var j=0;j<good.length;++j){
-                  if(item_info.indexOf(good[j].id)==-1){
-                    var obj={};
-                    obj.post_id=good[j].id;
-                    obj.post_time=good[j].updated_time;;
-                    temp.posts.push(obj);
-                    temp.last_update_time=Date.now();
-                //    console.log(temp);
-                    //dbo.collection(collection).findOneAndDelete({"item":temp.item},function(err,res){});
-                    //dbo.collection(collection).insert(temp,function(err,res){})
-
-                  }
-                }
-                //console.log(temp.item);
-               // dbo.collection(collection).findOneAndDelete({"item":temp.item},function(err,res){});
-               // dbo.collection(collection).insert(temp,function(err,res){});i 
-              }) 
-            }
-            db.close();
-        });
-    });
-};
-*/
 module.exports.update_item_info=function(collection,keyword){
     const config=require('./config');
     var MongoClient = require('mongodb').MongoClient;
