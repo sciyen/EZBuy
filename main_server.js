@@ -32,12 +32,17 @@ function findMatch(){
     for(var i=0;i<users.length;i++){
       console.log(`User: ${users[i].client_name}`);
       good.query(users[i], results, goodCollectionName);
-      //good.push_to_item_info(users[i],"item_info")
     }
     chatbot.send(results);
   });
 }
-
+function update_item(){
+  user.listAll("item_info",(item_info)=>{
+    for(var i=0;i<item_info.length;++i){
+      good.update_item_info("item_info",item_info[i]);
+    }
+  });
+}
 app.get("/crawler_request", (req, res)=>{
   console.log('Get crawler request from chatbot');
   //findMatch();
@@ -53,9 +58,10 @@ function refresh(){
   //setTimeout(()=>{findMatch()}, 10000);
 }
 //removeAllGoods();
-refresh();
-setInterval(()=>{refresh()}, 60*1000);
-app.listen(port);
+//refresh();
+update_item();
+//setInterval(()=>{refresh()}, 60*1000);
+//app.listen(port);
 //refreshGoods();
 //findMatch();
 //removeAllGoods();
