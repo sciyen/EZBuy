@@ -170,7 +170,7 @@ module.exports.update_item_info=function(collection,keyword){
               }
             }
             console.log(keyword);
-            dbo.collection(collection).updateOne({"item":keyword.item},keyword);
+            dbo.collection(collection).updateOne({"item":keyword.item},{$set: {posts: keyword.posts, last_update_time: keyword.last_update_time}});
             db.close();
           });
            //console.log(keyword);
