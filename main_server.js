@@ -8,6 +8,7 @@ const port = 10418;
 
 const goodCollectionName = 'EZBuyGoods';
 const userCollectionName = 'client_info';
+const itemCollectionName = 'item_info';
 
 function refreshGoods(){
   crawler.loadFeeds((feeds)=>{
@@ -49,6 +50,8 @@ app.get("/crawler_request", (req, res)=>{
 
 function refresh(){
   console.log('Refreshing Good datasets');
+  var results = [];
+  good.itemMatch(results, itemCollectionName);
   refreshGoods();
   console.log('Finding match goods');
   setTimeout(()=>{findMatch()}, 10000);
