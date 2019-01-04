@@ -73,13 +73,13 @@ class ReplyTemplate(Enum):
 #     REMOVE_ONE_FROM_CART = '成功將「{item_name}」從追蹤清單移除囉！\n（Tips：想追蹤其它關鍵字，直接在訊息欄輸入關鍵字名稱就可以了~）'
     REMOVE_ALL_FROM_CART = '成功將追蹤清單中所有商品移除囉！\n（Tips：想追蹤其它商品，直接在訊息欄輸入商品名稱就可以了~）'
 #     REMOVE_ALL_FROM_CART = '成功將追蹤清單中所有關鍵字移除囉！\n（Tips：想追蹤其它關鍵字，直接在訊息欄輸入關鍵字就可以了~）'
-    REMOVE_NONE_FROM_CART = '感謝你使用EZBuy，記得隨時關注我們的新消息喔> <'
+    THANKS_FOR_USING = '感謝你使用EZBuy，記得隨時關注我們的新消息喔> <'
     ITEM_MATCH = '野生的商品出現在二手版上！立刻點擊網址去捕獲它吧\\(ΦωΦ)/\n'
     GETREKT_MOTHERFUCKER = '很遺憾，由於濫用EZBuy聊天機器人的關係，你已經被列入我們的黑名單了。我們將不會再提供任何服務給你！'
     BUTTON_GROUP = [
         ActionButton(ButtonType.POSTBACK, '我的追蹤清單', payload='SHOW_SHOPPING_CART'),
         ActionButton(ButtonType.POSTBACK, '查看使用說明', payload='SHOW_HELP'),
-        ActionButton(ButtonType.WEB_URL, '問題/意見回饋', url='https://www.facebook.com/EZBuy-245463649459051/')
+        ActionButton(ButtonType.WEB_URL, '問題/意見回饋', url='https://goo.gl/forms/RhEbOoCWhDDct52Y2')
     ]
 
 '''
@@ -98,18 +98,30 @@ class ReplyTemplate(Enum):
 
 ### item_info document schema:
 {
-    "item": "衣服",
+    "item": "某個東西",
     "subscribers":
     [
         {
-            "client_id": "<client_id_1>",
-            "last_match_time": "<timestamp>"
+            "client_id": "100000001",
+            "last_match_time": 0  
         },
         {
-            "client_id": "<client_id_2>",
-            "last_match_time": "<timestamp>"
+            "client_id": "100000002",
+            "last_match_time": 40848415144
         }
-    ]
+    ],
+    "posts":
+    [
+        {
+            "post_id": "1084404_15078844",
+            "post_time": 40189845654
+        },
+        {
+            "post_id": "1084404_15078845",
+            "post_time": 40189845655
+        }
+    ],
+    "last_update_time": 40189845655
 }
 '''
 def checkEventValidity(data_raw, xhub_signature):
@@ -166,8 +178,10 @@ def addToShoppingCart(client_id, client_name, item_name):
     else:
         query_item = {'item': item_name}
         update_item = {
-            '$set': {
-                'item': item_name
+            '$setOnInsert': {
+                'item': item_name,
+                'posts': [],
+                'last_update_time': 0
             },
             '$addToSet': {
                 'subscribers': {'$each': [{'client_id': client_id, 'last_match_time': 0}]}
@@ -213,7 +227,7 @@ def removeFromShoppingCart(client_id, item_idx):
             '$pull': {'subscribers': {'client_id': client_id}}
         }
         client_result = db_client.find_one_and_update(query_client, update_client, return_document=ReturnDocument.AFTER)
-        pprint(client_result)
+#         pprint(client_result)
         item_result = db_item.find_one_and_update(query_item, update_item)
         return showUsualButtons(client_id, ReplyTemplate.REMOVE_ONE_FROM_CART.value.format(item_name=item_name))
     elif item_idx == -1:
@@ -227,11 +241,11 @@ def removeFromShoppingCart(client_id, item_idx):
             '$pull': {'subscribers': {'client_id': client_id}}
         }
         client_result = db_client.find_one_and_update(query_client, update_client, return_document=ReturnDocument.AFTER)
-        pprint(client_result)
+#         pprint(client_result)
         item_result = db_item.update_many(query_item, update_item)
         return showUsualButtons(client_id, ReplyTemplate.REMOVE_ALL_FROM_CART.value)
     elif item_idx == -2:
-        return showUsualButtons(client_id, ReplyTemplate.REMOVE_NONE_FROM_CART.value)
+        return showUsualButtons(client_id, ReplyTemplate.THANKS_FOR_USING.value)
 
 
 bot = Messenger(ACCESS_TOKEN, default_tag_field='PAIRING_UPDATE')
@@ -323,14 +337,18 @@ def match():
         for client_id in data:
             item_list = data[client_id]
             if len(item_list) > 0:
-                reply_message = ReplyTemplate.ITEM_MATCH.value
+                reply_message_list = []
+                reply_message_list.append(ReplyTemplate.ITEM_MATCH.value)
                 for item in item_list:
                     item_name = item['item']
                     post_id_list = item['post_id']
-                    reply_message += '「{item_name}」：\n'.format(item_name=item_name)
+                    reply_message = '「{item_name}」：\n'.format(item_name=item_name)
                     for post_id in post_id_list:
-                        reply_message += 'https://www.facebook.com/{pid}\n'.format(pid=post_id)
-                showUsualButtons(client_id, reply_message, is_response=False)
+                        reply_message += 'fb.com/{pid}\n'.format(pid=post_id)
+                    reply_message_list.append(reply_message)
+                for reply_message in reply_message_list:
+                    bot.send_text(client_id, reply_message, is_response=False)
+                showUsualButtons(client_id, ReplyTemplate.THANKS_FOR_USING.value, is_response=False)
     except Exception as e:
         print('Exception type: {}, exception message: {}'.format(type(e).__name__, e))
         return 'Exception type: {}, exception message: {}'.format(type(e).__name__, e), 500

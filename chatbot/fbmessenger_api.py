@@ -263,8 +263,11 @@ class Messenger(object):
                             headers = {"Content-Type": "application/json"},
                             data = response_message)
         fmt = "[{status}/{reason}/{text}] Reply to {recipient}: {content}"
-        logger.debug(fmt.format(status = req.status_code,
-                                reason = req.reason,
-                                text = req.text,
-                                recipient = message_data[RECIPIENT_FIELD],
-                                content = message_data[MESSAGE_FIELD]))
+#         logger.debug(fmt.format(status = req.status_code,
+#                                 reason = req.reason,
+#                                 text = req.text,
+#                                 recipient = message_data[RECIPIENT_FIELD],
+#                                 content = message_data[MESSAGE_FIELD]))
+        print('Status code:', req.status_code)
+        print('Response from FB:')
+        pprint(req.json())

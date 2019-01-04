@@ -4,5 +4,7 @@ chatbot/venv_chatbot/
 chatbot/__pycache__/
 chatbot/config/
 chatbot/garbage/
+chatbot/log/
 chatbot/ssl/
 chatbot/*.ipynb
+chatbot/typescript
