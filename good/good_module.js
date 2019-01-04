@@ -93,3 +93,38 @@ module.exports.removeAll=function(collection){
           if(err) console.log('Remove Error, ', err);})
     });
 };
+
+module.exports.itemMatch=function(results, collection){
+    const config=require('./config');
+    var MongoClient = require('mongodb').MongoClient;
+    const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
+    MongoClient.connect(url,function(err,db){
+        if(err) throw err;
+        var dbo =db.db(config.mongodb.database);
+
+        dbo.collection(collection).find({}).forEach((doc)=>{
+          /*var matched = doc.findAndModify( {
+            query: { "$posts.post_time": {$gt: doc.subscribers.last_match_time } },
+            update: { "$subscribers.last_match_time": doc.posts.post_time}
+          })
+          console.log(matched);*/
+
+          console.log(`Item: ${doc.item}`);
+          var client = doc.subscribers.sort({last_match_time: -1});
+          console.log("Client list= ");
+          console.log(client);
+          var post = doc.posts.sort({post_time: -1});
+          console.log("Post list= ");
+          console.log(post);
+        })
+        /*
+        dbo.collection(collection).find({ $query:{}, $orderby: {last_match_time:-1} }).toArray((err, result)=>{
+          if(err) console.log('Remove Error, ', err);
+          for(var item in result){
+
+          console.log(result);
+        })*/
+    });
+};
+
+
