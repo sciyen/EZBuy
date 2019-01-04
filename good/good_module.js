@@ -96,7 +96,7 @@ module.exports.removeAll=function(collection){
 module.exports.itemMatch=function(collection, callback){
     const DEBUGGER = false;
     var results = {};
-    console.log("ItemMatching...");
+    //console.log("ItemMatching...");
     const config=require('./config');
     var MongoClient = require('mongodb').MongoClient;
     const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
@@ -139,8 +139,9 @@ module.exports.itemMatch=function(collection, callback){
               if(!results[id])
                 results[id] = [];
               results[id].push(info);
-              cli.last_update_time = post[postIndex-1].post_time;
-//              dbo.collection(collection).save(cursor);
+              dbo.collection(collection).updateOne(
+                  {item: doc.item, "subscribers.client_id":cli.client_id},
+                  {$set: {"subscribers.$.last_match_time": post[0].post_time}})
             }
           })
           if(DEBUGGER){
@@ -149,8 +150,6 @@ module.exports.itemMatch=function(collection, callback){
           }
         }, ()=>{
           results["token"] = config.token; 
-          console.log("Result=");
-          console.log(results);
           callback(results);
         })
       })

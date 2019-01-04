@@ -10,10 +10,14 @@ const goodCollectionName = 'EZBuyGoods';
 const userCollectionName = 'client_info';
 const itemCollectionName = 'item_info';
 
+const crawlerUpdateMin = 3;
+const matchUpdateSec = 10;
+
+
 function refreshGoods(){
   crawler.loadFeeds((feeds)=>{
     good.push(feeds, goodCollectionName);
-    console.log('New feeds loaded');
+    console.log('New feeds loaded, ' + new Date());
   })
 }
 
@@ -36,20 +40,24 @@ function update_item(){
 }
 
 function refresh(){
-  console.log('Refreshing Good datasets');
   update_item();
   setTimeout(()=>{good.itemMatch(itemCollectionName, (results)=>{
-    chatbot.send(results);
+    if(Object.keys(results).length > 1) 
+      chatbot.send(results);
   })}, 1000);
 }
-
-
+/*
+app.get("/crawler_request", (req, res)=>{
+  console.log('Get crawler request from chatbot');
+  refresh();
+})
+*/
 
 refresh();
-setInterval(()=>{refreshGoods()}, 60*1000);
-setInterval(()=>{refresh()}, 10*1000);
+setInterval(()=>{refreshGoods()}, crawlerUpdateMin*60*1000);
+setInterval(()=>{refresh()}, matchUpdateSec*1000);
 
-//setInterval(()=>{refresh()}, 60*1000);
+
 //app.listen(port);
 
 
@@ -61,10 +69,6 @@ setInterval(()=>{refresh()}, 10*1000);
 
 
 /*
-app.get("/crawler_request", (req, res)=>{
-  console.log('Get crawler request from chatbot');
-  //findMatch();
-})
 function findMatch(){
   user.listAll(userCollectionName, (users)=>{
     var results = {};
