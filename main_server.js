@@ -32,6 +32,7 @@ function findMatch(){
     for(var i=0;i<users.length;i++){
       console.log(`User: ${users[i].client_name}`);
       good.query(users[i], results, goodCollectionName);
+      //good.push_to_item_info(users[i],"item_info")
     }
     chatbot.send(results);
   });
