@@ -93,17 +93,19 @@ module.exports.removeAll=function(collection){
           if(err) console.log('Remove Error, ', err);})
     });
 };
-module.exports.itemMatch=function(results, collection){
+module.exports.itemMatch=function(collection, callback){
     const DEBUGGER = false;
+    var results = {};
     console.log("ItemMatching...");
     const config=require('./config');
     var MongoClient = require('mongodb').MongoClient;
     const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
     MongoClient.connect(url,function(err,db){
-        if(err) throw err;
-        var dbo =db.db(config.mongodb.database);
+      if(err) throw err;
+      var dbo =db.db(config.mongodb.database);
 
-        dbo.collection(collection).find({}).forEach((doc)=>{
+      dbo.collection(collection).find({}, (err, cursor)=>{
+        cursor.forEach((doc)=>{
           var client = doc.subscribers.sort({last_match_time: -1});
           var post = doc.posts.sort({post_time: -1});
           if(DEBUGGER){
@@ -137,16 +139,21 @@ module.exports.itemMatch=function(results, collection){
               if(!results[id])
                 results[id] = [];
               results[id].push(info);
+              cli.last_update_time = post[postIndex-1].post_time;
+//              dbo.collection(collection).save(cursor);
             }
           })
           if(DEBUGGER){
             console.log("Result=");
             console.log(results);
           }
-       })
-      console.log("Result=");
-      console.log(results);
-
+        }, ()=>{
+          results["token"] = config.token; 
+          console.log("Result=");
+          console.log(results);
+          callback(results);
+        })
+      })
     });
 };
 
@@ -164,12 +171,12 @@ module.exports.update_item_info=function(collection,keyword){
                 var obj={};
                 obj.post_id=match[j].id;
                 obj.post_time=match[j].updated_time;
-                console.log(obj);
+                //console.log(obj);
                 keyword.posts.push(obj);
                 keyword.last_update_time=Date.now();
               }
             }
-            console.log(keyword);
+            //console.log(keyword);
             dbo.collection(collection).updateOne({"item":keyword.item},{$set: {posts: keyword.posts, last_update_time: keyword.last_update_time}});
             db.close();
           });

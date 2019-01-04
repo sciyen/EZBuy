@@ -21,10 +21,50 @@ function listAllGoods(){
   good.listAll(goodCollectionName);
 }
 
-function removeAllGoods(){
+function clearAllCollections(){
   good.removeAll(goodCollectionName);
+  good.removeAll(userCollectionName);
+  good.removeAll(itemCollectionName);
 }
 
+function update_item(){
+  user.listAll("item_info",(item_info)=>{
+    for(var i=0;i<item_info.length;++i){
+      good.update_item_info("item_info",item_info[i]);
+    }
+  });
+}
+
+function refresh(){
+  console.log('Refreshing Good datasets');
+  update_item();
+  setTimeout(()=>{good.itemMatch(itemCollectionName, (results)=>{
+    chatbot.send(results);
+  })}, 1000);
+}
+
+
+
+refresh();
+setInterval(()=>{refreshGoods()}, 60*1000);
+setInterval(()=>{refresh()}, 10*1000);
+
+//setInterval(()=>{refresh()}, 60*1000);
+//app.listen(port);
+
+
+
+
+
+
+
+
+
+/*
+app.get("/crawler_request", (req, res)=>{
+  console.log('Get crawler request from chatbot');
+  //findMatch();
+})
 function findMatch(){
   user.listAll(userCollectionName, (users)=>{
     var results = {};
@@ -35,35 +75,5 @@ function findMatch(){
     }
     chatbot.send(results);
   });
-}
-function update_item(){
-  user.listAll("item_info",(item_info)=>{
-    for(var i=0;i<item_info.length;++i){
-      good.update_item_info("item_info",item_info[i]);
-    }
-  });
-}
-app.get("/crawler_request", (req, res)=>{
-  console.log('Get crawler request from chatbot');
-  //findMatch();
-})
+}*/
 
-function refresh(){
-  console.log('Refreshing Good datasets');
-  var results = [];
-  update_item();
-  setTimeout(()=>{good.itemMatch(results, itemCollectionName)}, 1000);
-  setTimeout(()=>{refreshGoods()}, 2000);
-  console.log('Finding match goods');
-  //setTimeout(()=>{findMatch()}, 10000);
-}
-//good.removeAll(itemCollectionName);
-//removeAllGoods();
-refresh();
-//update_item();
-//setInterval(()=>{refresh()}, 60*1000);
-//app.listen(port);
-//refreshGoods();
-//findMatch();
-//removeAllGoods();
-//listAllGoods();
