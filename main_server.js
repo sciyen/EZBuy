@@ -57,8 +57,10 @@ function refresh(){
   console.log('Finding match goods');
   //setTimeout(()=>{findMatch()}, 10000);
 }
+//good.removeAll(itemCollectionName);
 //removeAllGoods();
 refresh();
+//update_item();
 //setInterval(()=>{refresh()}, 60*1000);
 //app.listen(port);
 //refreshGoods();

@@ -94,8 +94,7 @@ module.exports.removeAll=function(collection){
     });
 };
 module.exports.itemMatch=function(results, collection){
-    //console.log("Updating item_info");
-    //good.update_item_info(collection);
+    const DEBUGGER = false;
     console.log("ItemMatching...");
     const config=require('./config');
     var MongoClient = require('mongodb').MongoClient;
@@ -105,34 +104,51 @@ module.exports.itemMatch=function(results, collection){
         var dbo =db.db(config.mongodb.database);
 
         dbo.collection(collection).find({}).forEach((doc)=>{
-          console.log(`Item: ${doc.item}`);
           var client = doc.subscribers.sort({last_match_time: -1});
-          console.log("Client list= ");
-          console.log(client);
           var post = doc.posts.sort({post_time: -1});
-          console.log("Post list= ");
-          console.log(post);
-
-          console.log("=============");
+          if(DEBUGGER){
+            console.log(`Item: ${doc.item}========================================`);
+            console.log("Client list= ");
+            console.log(client);
+            console.log("Post list= ");
+            console.log(post);
+          }
           var postIndex = 0;
           var matchedPostId = [];
-          for(var clientIndex=0; clientIndex<client.length && postIndex<post.length; clientIndex++){
-            console.log(`${clientIndex}= ${client[clientIndex].last_match_time}`);
+          client.forEach((cli, cliInd)=>{
+            if(DEBUGGER)
+              console.log(`ClientID = ${cli.client_id}= ${cli.last_match_time}`);
             while(postIndex < post.length
-               && client[clientIndex].last_match_time < post[postIndex].post_time){
+               && cli.last_match_time < post[postIndex].post_time){
               matchedPostId.push(post[postIndex].post_id);
-              console.log(`Push ${post[postIndex].post_id}`);
+              //console.log(`Push ${post[postIndex].post_id}`);
               postIndex++;
             }
-            if(matchedPostId.length > 0){
-              results.client[clientIndex].client_id.item = doc.item;
-              results.client[clientIndex].client_id.post_id = matchedPostId;
+            if(DEBUGGER){
+              console.log("Insertion report");
+              console.log(matchedPostId);
             }
+            if(matchedPostId.length > 0){
+              const id = cli.client_id;
+              const info = {
+                "item": doc.item,
+                "post_id": matchedPostId
+              }
+              if(!results[id])
+                results[id] = [];
+              results[id].push(info);
+            }
+          })
+          if(DEBUGGER){
+            console.log("Result=");
+            console.log(results);
           }
-        })
+       })
+      console.log("Result=");
+      console.log(results);
+
     });
 };
-
 
 module.exports.update_item_info=function(collection,keyword){
     const config=require('./config');
