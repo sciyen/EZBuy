@@ -95,6 +95,9 @@ module.exports.removeAll=function(collection){
 };
 
 module.exports.itemMatch=function(results, collection){
+    //console.log("Updating item_info");
+    //good.update_item_info(collection);
+    console.log("ItemMatching...");
     const config=require('./config');
     var MongoClient = require('mongodb').MongoClient;
     const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
@@ -103,12 +106,6 @@ module.exports.itemMatch=function(results, collection){
         var dbo =db.db(config.mongodb.database);
 
         dbo.collection(collection).find({}).forEach((doc)=>{
-          /*var matched = doc.findAndModify( {
-            query: { "$posts.post_time": {$gt: doc.subscribers.last_match_time } },
-            update: { "$subscribers.last_match_time": doc.posts.post_time}
-          })
-          console.log(matched);*/
-
           console.log(`Item: ${doc.item}`);
           var client = doc.subscribers.sort({last_match_time: -1});
           console.log("Client list= ");
@@ -116,14 +113,24 @@ module.exports.itemMatch=function(results, collection){
           var post = doc.posts.sort({post_time: -1});
           console.log("Post list= ");
           console.log(post);
-        })
-        /*
-        dbo.collection(collection).find({ $query:{}, $orderby: {last_match_time:-1} }).toArray((err, result)=>{
-          if(err) console.log('Remove Error, ', err);
-          for(var item in result){
 
-          console.log(result);
-        })*/
+          console.log("=============");
+          var postIndex = 0;
+          var matchedPostId = [];
+          for(var clientIndex=0; clientIndex<client.length && postIndex<post.length; clientIndex++){
+            console.log(`${clientIndex}= ${client[clientIndex].last_match_time}`);
+            while(postIndex < post.length
+               && client[clientIndex].last_match_time < post[postIndex].post_time){
+              matchedPostId.push(post[postIndex].post_id);
+              console.log(`Push ${post[postIndex].post_id}`);
+              postIndex++;
+            }
+            if(matchedPostId.length > 0){
+              results.client[clientIndex].client_id.item = doc.item;
+              results.client[clientIndex].client_id.post_id = matchedPostId;
+            }
+          }
+        })
     });
 };
 
@@ -140,7 +147,7 @@ module.exports.update_item_info=function(collection){
             console.log(result);
             for(var i=0;i<result.length;++i){
               //var reg= new RegExp(result.item);
-              var good=db.collection("EZBuyGoods").find({"message":{$regex:result[i].item}}).toArray();
+              var good=dbo.collection("EZBuyGoods").find({"message":{$regex:result[i].item}}).toArray();
               for(var j=0;j<good.length;++j){
                 if(result[i].posts.map(function(e){return e.post_id}).indexof(good[j].id)==-1){
                   //var obj={"post_id"=good[j].id,"post_time"=good[j].update_time};
@@ -149,7 +156,7 @@ module.exports.update_item_info=function(collection){
                   obj.post_time=good[j].update_time;
                   result[i].posts.push(obj);
                   result[i].last_update_time=Date.now();
-                  db.collection(collection).update({"item":result[i].item}
+                  dbo.collection(collection).update({"item":result[i].item}
                       ,{"item":result[i].item,"posts":result[i].posts,"last_update_time":result[i].last_update_time});
                 }
               }

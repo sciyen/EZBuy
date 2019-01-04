@@ -46,10 +46,11 @@ app.get("/crawler_request", (req, res)=>{
 function refresh(){
   console.log('Refreshing Good datasets');
   var results = [];
-  good.itemMatch(results, itemCollectionName);
-  refreshGoods();
+  good.update_item_info(itemCollectionName);
+  setTimeout(()=>{good.itemMatch(results, itemCollectionName)}, 1000);
+  setTimeout(()=>{refreshGoods()}, 2000);
   console.log('Finding match goods');
-  setTimeout(()=>{findMatch()}, 10000);
+  //setTimeout(()=>{findMatch()}, 10000);
 }
 //removeAllGoods();
 refresh();
