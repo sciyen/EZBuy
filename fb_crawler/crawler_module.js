@@ -7,7 +7,7 @@ const https = require('https');
 
 var tokenFile = fs.readFileSync(tokenFilename);
 var TOKEN = JSON.parse(tokenFile);
-const postLimit = 80;
+const postLimit = 40;
 
 const graphUrl = `https://graph.facebook.com/${TOKEN['GROUP_ID']}/feed?fields=id,updated_time,message,description,picture&limit=${postLimit}&&access_token=${TOKEN['ACCESS_TOKEN']};`
 
@@ -28,7 +28,7 @@ var crawler = {
       res.on('end', ()=>{                             // Last part
         var content = JSON.parse(body);
         if(LOG_FEEDS)
-         // console.log('JSON content=', content);
+          console.log('JSON content=', content);
         console.log('Departing feeds...');
         callback(this.departFeeds(content));           // Use departFeeds to filter usable feeds
       });

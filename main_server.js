@@ -10,7 +10,7 @@ const goodCollectionName = 'EZBuyGoods';
 const userCollectionName = 'client_info';
 const itemCollectionName = 'item_info';
 
-const crawlerUpdateMin = 3;
+const crawlerUpdateMin = 5;
 const matchUpdateSec = 10;
 
 
@@ -52,7 +52,7 @@ app.get("/crawler_request", (req, res)=>{
   refresh();
 })
 */
-
+//refreshGoods();
 refresh();
 setInterval(()=>{refreshGoods()}, crawlerUpdateMin*60*1000);
 setInterval(()=>{refresh()}, matchUpdateSec*1000);
