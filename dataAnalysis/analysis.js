@@ -1,4 +1,11 @@
 var analysis = require("./analysis_module");
+analysis.getClientCount((result)=>{
+  console.log(result);
+});
+analysis.getGoodCount((result)=>{
+  console.log(result);
+});
+/*
 analysis.getPopularItems("Subscribers", (results)=>{
   //console.log(result);
   var BreakException = {};
@@ -15,4 +22,4 @@ analysis.getPopularItems("Subscribers", (results)=>{
     if(e!=BreakException) console.log(e);
   }
 });
-
+*/

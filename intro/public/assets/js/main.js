@@ -414,6 +414,12 @@ var chartOptionsProto={
                   url:"./analysis",
                   dataType:"json",
                   success:function(data){
+                    // Count
+                    $("#goods_count").text(data.goods_count);
+                    $("#items_count").text(data.items_count);
+                    $("#clients_count").text(data.clients_count);
+
+                    // Chart
                     var chartData = {};
                     var subscribers = simplifyChartData(data.subscribers, 15);
                     chartData["Subscribers"] = doughnutChartProto;
@@ -421,9 +427,6 @@ var chartOptionsProto={
                     var subscribersOptions = getChartOption("Item Subscribers", chartData["Subscribers"]);
                     var subscribersChart = new CanvasJS.Chart("subscribersChartContainer", subscribersOptions);
                     subscribersChart.options.data = chartData["Subscribers"];                  
-                    console.log("sub");
-                    console.log(subscribersOptions);
-                    console.log(chartData["Subscribers"]);
                     subscribersChart.render();
                     
                     var posts = simplifyChartData(data.posts, 15);
@@ -432,9 +435,6 @@ var chartOptionsProto={
                     var postsOptions = getChartOption("Item Posts", chartData["Posts"]);
                     var postsChart = new CanvasJS.Chart("postsChartContainer", postsOptions);
                     postsChart.options.data = chartData["Posts"];
-                    console.log("post");
-                    console.log(postsOptions);
-                    console.log(chartData["Posts"]);
                     postsChart.render();
                   },
                   error:function(data){

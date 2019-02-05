@@ -37,3 +37,35 @@ module.exports.getPopularItems=function(sortBy, callback){
   });
 };
 
+function getCollectionCount(collection, callback){
+  const config=require('./config');
+  var MongoClient = require('mongodb').MongoClient;
+  const url = `mongodb://${config.mongodb.user}:${config.mongodb.password}@${config.mongodb.host}/${config.mongodb.database}`;
+  MongoClient.connect(url,function(err,db){
+      if(err) throw err;
+      var dbo =db.db('wp2018_groupA');
+      var result = dbo.collection(collection).countDocuments({}, (err, count)=>{
+        if(err) throw err;
+        callback(count);
+      });
+  });
+};
+module.exports.getClientCount=function(callback){
+  const collection = "client_info";
+  getCollectionCount(collection, (count)=>{
+    callback(count);
+  })  
+};
+module.exports.getItemCount=function(callback){
+  const collection = "item_info";
+  getCollectionCount(collection, (count)=>{
+    callback(count);
+  })  
+};
+module.exports.getGoodCount=function(callback){
+  const collection = "EZBuyGoods";
+  getCollectionCount(collection, (count)=>{
+    callback(count);
+  })  
+};
+

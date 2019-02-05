@@ -4,7 +4,7 @@ const nodemailer = require("nodemailer");
 const email = require("./email.js");
 var analysis = require("../dataAnalysis/analysis_module");
 const app = express();
-const port = 23458;
+const port = 23457;
 
 app.listen(port);
 app.use(express.static(__dirname + '/public'));
@@ -30,11 +30,20 @@ app.get('/analysis', function(req,res){
   console.log("Get request from client");
   analysis.getPopularItems("Subscribers", (subscribers)=>{
     analysis.getPopularItems("Posts", (posts)=>{
-      var data = {
-        subscribers: subscribers,
-        posts: posts
-      }
-      res.send(data);
+      analysis.getClientCount((cli_count)=>{
+        analysis.getItemCount((item_count)=>{
+          analysis.getGoodCount((good_count)=>{
+            var data = {
+              subscribers: subscribers,
+              posts: posts,
+              clients_count: cli_count,
+              items_count: item_count,
+              goods_count: good_count
+            }
+            res.send(data);
+          })
+        })
+      })
     })
   })
 })

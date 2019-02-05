@@ -13,7 +13,7 @@ function refreshGoodsByTime(startTime, endTime){
   })
 }
 
-refreshGoodsByTime("01/01/2019", "01/03/2019");
+refreshGoodsByTime("01/20/2019", "01/29/2019");
 
 /*
 crawler.loadFeeds((feeds)=>{
