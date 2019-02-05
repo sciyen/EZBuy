@@ -273,7 +273,6 @@
 
 			// Event: Toggle.
 				$body.on('click', 'a[href="#' + id + '"]', function(event) {
-
 					event.preventDefault();
 					event.stopPropagation();
 

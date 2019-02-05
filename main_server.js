@@ -21,12 +21,23 @@ function refreshGoods(){
   })
 }
 
+  /* Scratch feeds from FB group */
+  /* With the following format:
+   * startTime: mm/dd/yyyy 
+   * endTime:   mm/dd/yyyy */
+function refreshGoodsByTime(startTime, endTime){
+  crawler.loadFeedsByTime(startTime, endTime, (feeds)=>{
+    good.push(feeds, goodCollectionName);
+    console.log(`New feeds loaded, from ${startTime} to ${endTime}, ` + new Date());
+  })
+}
+
 function listAllGoods(){
   good.listAll(goodCollectionName);
 }
 
 function clearAllCollections(){
-  good.removeAll(goodCollectionName);
+  //good.removeAll(goodCollectionName);
   good.removeAll(userCollectionName);
   good.removeAll(itemCollectionName);
 }
@@ -40,11 +51,16 @@ function update_item(){
 }
 
 function refresh(){
-  update_item();
-  setTimeout(()=>{good.itemMatch(itemCollectionName, (results)=>{
-    if(Object.keys(results).length > 1) 
-      chatbot.send(results);
-  })}, 1000);
+  try{
+    update_item();
+    setTimeout(()=>{good.itemMatch(itemCollectionName, (results)=>{
+      if(Object.keys(results).length > 1) 
+        chatbot.send(results);
+    })}, 1000);
+  }
+  catch(err){
+    console.log(`Refresh Error ${err}`);
+  }
 }
 /*
 app.get("/crawler_request", (req, res)=>{
@@ -52,6 +68,8 @@ app.get("/crawler_request", (req, res)=>{
   refresh();
 })
 */
+//refreshGoods();
+//refreshGoodsByTime("01/2/2019", "01/04/2019");
 //refreshGoods();
 refresh();
 setInterval(()=>{refreshGoods()}, crawlerUpdateMin*60*1000);

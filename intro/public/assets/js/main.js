@@ -3,10 +3,60 @@
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
+var colormap = [
+  "#51574a",
+  "#447c69",
+  "#74c493",
+  "#8e8c6d",
+  "#e4bf80",
+  "#e9d78e",
+  "#e2975d",
+  "#f19670",
+  "#e16552",
+  "#c94a53",
+  "#be5168",
+  "#a34974",
+  "#993767",
+  "#65387d",
+  "#4e2472",
+  "#9163b6",
+  "#e279a3",
+  "#e0598b",
+  "#7c9fb0",
+  "#5698c4",
+  "#9abf88"];
 
+var doughnutChartProto = [{
+  cursor: "pointer",
+  explodeOnClick: false,
+  innerRadius: "75%",
+  legendMarkerType: "circle",
+  name: "Subscribers",
+  radius: "100%",
+  showInLegend: true,
+  startAngle: 90,
+  type: "doughnut",
+  dataPoints: []
+}]
+
+var chartOptionsProto={
+  animationEnabled:true,
+  theme:"dark2",
+  title:{
+    text:"Item Subscribers"
+  },
+  legend:{
+    horizontalAlign:"right",
+    verticalAlign: "center",
+    fontFamily:"calibri",
+    fontSize:16,
+    fontWeight:"lighter",
+    itemTextFormatter:[]
+  },
+  data:[]
+};
 (function($) {
-
-	var	$window = $(window),
+  	var	$window = $(window),
 		$body = $('body'),
 		$wrapper = $('#wrapper'),
 		$header = $('#header'),
@@ -357,7 +407,41 @@
 
 						// Show article.
 							$main._show(location.hash.substr(1));
-
+              if(location.hash.substr(1) == 'analysis'){
+                var displayCount = 15; 
+                $.ajax({
+                  method:"get",
+                  url:"./analysis",
+                  dataType:"json",
+                  success:function(data){
+                    var chartData = {};
+                    var subscribers = simplifyChartData(data.subscribers, 15);
+                    chartData["Subscribers"] = doughnutChartProto;
+                    chartData["Subscribers"][0].dataPoints = subscribers;
+                    var subscribersOptions = getChartOption("Item Subscribers", chartData["Subscribers"]);
+                    var subscribersChart = new CanvasJS.Chart("subscribersChartContainer", subscribersOptions);
+                    subscribersChart.options.data = chartData["Subscribers"];                  
+                    console.log("sub");
+                    console.log(subscribersOptions);
+                    console.log(chartData["Subscribers"]);
+                    subscribersChart.render();
+                    
+                    var posts = simplifyChartData(data.posts, 15);
+                    chartData["Posts"] = doughnutChartProto;
+                    chartData["Posts"][0].dataPoints = posts;
+                    var postsOptions = getChartOption("Item Posts", chartData["Posts"]);
+                    var postsChart = new CanvasJS.Chart("postsChartContainer", postsOptions);
+                    postsChart.options.data = chartData["Posts"];
+                    console.log("post");
+                    console.log(postsOptions);
+                    console.log(chartData["Posts"]);
+                    postsChart.render();
+                  },
+                  error:function(data){
+                    console.log("Data loding error!");
+                  }
+                })
+              }
 					}
 
 			});
@@ -399,3 +483,31 @@
 					});
 
 })(jQuery);
+
+
+function simplifyChartData(input, number){
+  if(number > input.length) number = input.length;
+  var output = input.slice(0, number).map((item, index, array)=>{
+    return {
+      name:item.name,
+      y:item.count,
+      color:colormap[index]
+    }
+  })
+  output.push({
+    name:"other",
+    y:input.length-number,
+    color:colormap[number]
+  })
+  return output;
+}
+
+function getChartOption(name, dataPoints){
+  var output = chartOptionsProto;
+  output.title.text = name;
+  output.data = dataPoints;
+  output.legend.itemTextFormatter = function(e){
+    return e.dataPoint.name+":"+e.dataPoint.y;
+  }
+  return output;
+}

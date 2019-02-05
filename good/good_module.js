@@ -106,9 +106,10 @@ module.exports.itemMatch=function(collection, callback){
 
       dbo.collection(collection).find({}, (err, cursor)=>{
         cursor.forEach((doc)=>{
-          var client = doc.subscribers.sort({last_match_time: -1});
-          var post = doc.posts.sort({post_time: -1});
+          var client = doc.subscribers.sort((a, b)=>{return a.last_update_time<b.last_update_time?1:-1});
+          var post = doc.posts.sort((a, b)=>{return a.post_time<b.post_time?1:-1});
           if(DEBUGGER){
+            console.log(typeof(doc));
             console.log(`Item: ${doc.item}========================================`);
             console.log("Client list= ");
             console.log(client);
